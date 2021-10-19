@@ -6,10 +6,15 @@ load_dotenv()
 
 clientId = os.environ['clientId']
 domain = os.environ['domain']
-user_info = login_button(clientId, domain = domain)
 
-st.write(user_info)
+st.title('Welcome to Auth0-Streamlit')
 
 
-st.write(st.slider('hi'))
-st.write(user_info['nickname'])
+with st.echo():
+    user_info = login_button(clientId, domain = domain)
+    if user_info:
+        st.write(f'Hi {user_info["nickname"]}')
+        # st.write(user_info) # some private information here
+        
+if not user_info:
+    st.write("Please login to continue")
