@@ -2,3 +2,5 @@ venv
 .env
 node_modules
 __pycache__
+dist
+streamlit_auth0_component.egg-info
