@@ -5,7 +5,7 @@
 ![Example of Streamlit-Auth0|635x380](demo.gif?raw=true)
 
 ## Installation
-Todo
+`pip install streamlit-auth0-component==0.0.1`
 
 ## An example
 On Auth0 website start a "Single Page Web Application" and copy your client-id / domain (of form xxxx.us.auth0.com) into code below.
