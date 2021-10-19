@@ -9,3 +9,7 @@ domain = os.environ['domain']
 user_info = login_button(clientId, domain = domain)
 
 st.write(user_info)
+
+
+st.write(st.slider('hi'))
+st.write(user_info['nickname'])

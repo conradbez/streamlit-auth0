@@ -2,7 +2,6 @@ import React from "react";
 import { Router } from "react-router-dom";
 import { Auth0Provider } from "@auth0/auth0-react";
 import NavBar from "./components/NavBar";
-// import { useAuth0 } from "@auth0/auth0-react";
 import history from "./utils/history";
 import {
   Button,
@@ -26,8 +25,7 @@ class App extends StreamlitComponentBase {
 
   constructor(props){
     super(props)
-    this.state = { user: false };
-    console.log(this.props['args']['auth_setup'])
+    this.state = { user: null };
   }
 
   providerConfig = {
@@ -37,21 +35,27 @@ class App extends StreamlitComponentBase {
   };
 
   onRun = (user) => { 
-    if (! _.isEqual(user, this.state.user)){
-      user['token']().then(
-        (token) => {
-          user['token'] = token;
-          Streamlit.setComponentValue(user)
-          this.setState({user: user})
-        }
-      )
-    }
+    if (! _.isEqual(user, this.state.user)){        
+          if (! user){
+            Streamlit.setComponentValue(user)
+            this.setState({user: user})
+          }
+
+          else {
+            user['token']().then(
+              (token) => {
+                user['token'] = token;
+                Streamlit.setComponentValue(user)
+                this.setState({user: user})
+              }
+            )
+          }
+      } 
   }
 
   render(){
     return (
     <Auth0Provider {...this.providerConfig}>
-
         <div id="app" >
           <NavBar props = {{onRun : this.onRun, domain: this.props['args']['auth_setup']['domain']}} />
         </div>

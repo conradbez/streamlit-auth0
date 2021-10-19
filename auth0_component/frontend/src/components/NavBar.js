@@ -26,7 +26,7 @@ const NavBar = (props) => {
 
   var onRun  = props['props']['onRun']
   var domain = props['props']['domain']
-  console.log(props)
+
   // eslint-disable-next-line
   const {
     user,
@@ -44,7 +44,8 @@ const NavBar = (props) => {
     });
   
   const getAccessToken = () => {
-    return getAccessTokenWithPopup({
+    return getAccessTokenSilently({
+    // return getAccessTokenWithPopup({
       audience:`https://${domain}/api/v2/`,
       scope: "read:current_user",
     })
@@ -55,14 +56,8 @@ const NavBar = (props) => {
         user['token'] = getAccessToken;
         onRun(user);
   }else{
-    onRun(false)
+        onRun(false)
   }
-
-    // const accessToken = getAccessTokenSilently({
-    //   audience: `https://example.com/api/v2/`,
-    //   scope: "read:current_user",
-    // });
-    // console.log( accessToken )
 
   return (
     <div className="nav-container">
@@ -72,7 +67,7 @@ const NavBar = (props) => {
                   color="primary"
                   className="btn-margin"
                   onClick={() => {
-                      loginWithPopup({})
+                      loginWithPopup({}).then(()=>{onRun(false)})
                 }}
                 >
                   Log in

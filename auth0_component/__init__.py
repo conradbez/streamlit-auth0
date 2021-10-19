@@ -81,21 +81,26 @@ def login_button(clientId, domain,key=None, **kwargs):
     user_info = _login_button(auth_setup = {'clientId': clientId, "domain": domain }, key=key, default=0)
     if not user_info:
         return False
-    if isAuth(response = user_info, domain = domain):
+    elif isAuth(response = user_info, domain = domain):
         return user_info
     else:
         print('Auth failed: invalid token')
         raise 
-
 
 def isAuth(response, domain):
     return getVerifiedSubFromToken(token = response['token'], domain=domain) == response['sub']
 
 if not _RELEASE:
     import streamlit as st
+    from dotenv import load_dotenv
+    import os
+    load_dotenv()
 
+    clientId = os.environ['clientId']
+    domain = os.environ['domain']
     st.subheader("Login component")
-    user_info = login_button(clientId = "...", domain = "...")
+    user_info = login_button(clientId, domain = domain)
+    # user_info = login_button(clientId = "...", domain = "...")
     st.write('User info')
     st.write(user_info)
     if st.button('rerun'):
