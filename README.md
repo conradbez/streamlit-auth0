@@ -2,7 +2,7 @@
 
 **The fastest way to provide comprehensive login inside Streamlit**
 
-![Example of Streamlit-Auth0|635x380](https://raw.githubusercontent.com/conradbez/streamlit-auth0/main/demo.gif)
+![Example of Streamlit-Auth0|635x380](/conradbez/streamlit-auth0/blob/main/demo.gif?raw=true)
 
 ## Installation
 Todo
