@@ -23,3 +23,8 @@ st.write(user_info)
 
 `user_info` will now contain your user's information 
 
+
+## Todo
+
+- Pass all info through JWT, at the moment the `sub` field is the only field assing through verification
+- Test with other providers, only Google tested 
