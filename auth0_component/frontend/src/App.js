@@ -44,7 +44,6 @@ class App extends StreamlitComponentBase {
   onRun = (user, token) => {
     if (!_.isEqual(user, this.state.user)) {
       if (user) user['token'] = token
-      console.log("Sending data back to streamlit " + JSON.stringify(user))
       Streamlit.setComponentValue(user)
       this.setState({ user: user })
     }
