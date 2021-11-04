@@ -30,7 +30,7 @@ const NavBar = (props) => {
 
   const logoutWithRedirect = () =>
     logout({
-      returnTo: window.location,
+      returnTo: window.location.origin,
     })
 
 
