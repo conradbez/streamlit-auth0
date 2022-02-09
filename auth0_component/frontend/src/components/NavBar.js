@@ -38,18 +38,32 @@ const NavBar = (props) => {
     getAccessTokenWithPopup
   } = useAuth0();
 
+  const getOriginUrl = () => {
+    // Detect if you're inside an iframe
+    if (window.parent !== window) {
+      const currentIframeHref = new URL(document.location.href);
+      const urlOrigin = currentIframeHref.origin;
+      const urlFilePath = decodeURIComponent(currentIframeHref.pathname);
+      // Take referrer as origin
+      return urlOrigin + urlFilePath;
+    } else {
+      return window.location.origin;
+    }
+  }
+
+
   const logoutWithRedirect = () =>
     logout({
-      returnTo: window.location.origin,
+      returnTo: getOriginUrl(),
     });
-  
+
   const getAccessToken = () => {
     return getAccessTokenSilently({
     // return getAccessTokenWithPopup({
       audience:`https://${domain}/api/v2/`,
       scope: "read:current_user",
     })
-  }  
+  }
 
 
   if (isAuthenticated){
@@ -75,7 +89,7 @@ const NavBar = (props) => {
             )}
             {isAuthenticated && (
                 <Button
-                onClick={() => {  
+                onClick={() => {
                     logoutWithRedirect()
                   }}
                 >Logout
