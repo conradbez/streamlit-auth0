@@ -21,9 +21,6 @@ from jose import jwt
 
 def getVerifiedSubFromToken(token, domain):
     domain = "https://"+domain
-    if domain[-13:] != '.us.auth0.com':
-        print('domain should end with ".us.auth0.com" (no slash)')
-        raise ValueError
     jsonurl = urlopen(domain+"/.well-known/jwks.json")
     jwks = json.loads(jsonurl.read())
     unverified_header = jwt.get_unverified_header(token)
@@ -105,3 +102,4 @@ if not _RELEASE:
     st.write(user_info)
     if st.button('rerun'):
         st.experimental_rerun()
+
