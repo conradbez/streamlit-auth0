@@ -33,6 +33,8 @@ const login = async () => {
       client_id: client_id,
       redirect_uri: getOriginUrl(),
       audience:`https://${domain}/api/v2/`,
+      useRefreshTokens: true,
+      cacheLocation: "localstorage",
     });
     try{
       await auth0.loginWithPopup();
