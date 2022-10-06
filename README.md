@@ -36,3 +36,10 @@ st.write(user_info)
 
 - Pass all info through JWT, at the moment the `sub` field is the only field assing through verification
 - Test with other providers, only Google tested 
+
+
+## Deploy
+
+- `cd auth_component/frontend && npm run build && cd ../.. rm -rf dist/* && python setup.py sdist bdist_wheel`
+- `Change version in setup.py`
+- `twine upload dist/*`
