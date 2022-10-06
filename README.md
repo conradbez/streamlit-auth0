@@ -40,6 +40,6 @@ st.write(user_info)
 
 ## Deploy
 
-- `cd auth_component/frontend && npm run build && cd ../.. rm -rf dist/* && python setup.py sdist bdist_wheel`
 - `Change version in setup.py`
+- `cd auth_component/frontend && npm run build && cd ../.. rm -rf dist/* && python setup.py sdist bdist_wheel`
 - `twine upload dist/*`
