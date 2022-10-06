@@ -2,11 +2,12 @@ on:
   pull_request:
     branches:
     - main
+
 jobs:
-  test:
-    runs-on: ubuntu-18.04
+  build:
+    runs-on: ubuntu-latest
     steps:
-    - name: Pypi upload
-    - uses: ortega2247/pypi-upload-action@v1
-      with:
-        password: ${{ secrets.PYPI_API_TOKEN }}
+      - uses: ortega2247/pypi-upload-action@v1
+      - name: Pypi upload
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
