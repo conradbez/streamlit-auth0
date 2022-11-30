@@ -1,1 +1,1 @@
-recursive-include auth0_component/frontend/build *
+recursive-include auth0_component/frontend/dist *
