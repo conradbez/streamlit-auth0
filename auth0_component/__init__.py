@@ -23,7 +23,7 @@ from jose import jwt
 
 def getVerifiedSubFromToken(token, domain, unsafe_url_flag=False):
     domain = "https://"+domain
-    if unsafe_url_flag and domain[-13:] != '.us.auth0.com':
+    if unsafe_url_flag is False and domain[-13:] != '.us.auth0.com':
         print('domain should end with ".us.auth0.com" (no slash)')
         raise ValueError
     jsonurl = urlopen(domain+"/.well-known/jwks.json")
