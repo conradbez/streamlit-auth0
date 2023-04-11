@@ -79,7 +79,7 @@ def login_button(clientId, domain,key=None, **kwargs):
     user_info = _login_button(client_id=clientId, domain = domain, key=key, default=0)
     if not user_info:
         return False
-    elif isAuth(response = user_info, domain = domain, unsafe_url_flag):
+    elif isAuth(response = user_info, domain = domain, unsafe_url_flag=unsafe_url_flag):
         return user_info
     else:
         print('Auth failed: invalid token')
