@@ -21,9 +21,9 @@ from six.moves.urllib.request import urlopen
 from functools import wraps
 from jose import jwt
 
-def getVerifiedSubFromToken(token, domain):
+def getVerifiedSubFromToken(token, domain, unsafe_url_flag=False):
     domain = "https://"+domain
-    if domain[-13:] != '.us.auth0.com':
+    if unsafe_url_flag and domain[-13:] != '.us.auth0.com':
         print('domain should end with ".us.auth0.com" (no slash)')
         raise ValueError
     jsonurl = urlopen(domain+"/.well-known/jwks.json")
@@ -75,18 +75,18 @@ def login_button(clientId, domain,key=None, **kwargs):
     dict
         User info
     """
-
+    unsafe_url_flag = kwargs.get('unsafe_url_flag', False)
     user_info = _login_button(client_id=clientId, domain = domain, key=key, default=0)
     if not user_info:
         return False
-    elif isAuth(response = user_info, domain = domain):
+    elif isAuth(response = user_info, domain = domain, unsafe_url_flag):
         return user_info
     else:
         print('Auth failed: invalid token')
         raise 
 
-def isAuth(response, domain):
-    return getVerifiedSubFromToken(token = response['token'], domain=domain) == response['sub']
+def isAuth(response, domain, unsafe_url_flag=False):
+    return getVerifiedSubFromToken(token = response['token'], domain=domain, unsafe_url_flag=unsafe_url_flag) == response['sub']
 
 if not _RELEASE:
     import streamlit as st
