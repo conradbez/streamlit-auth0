@@ -16,10 +16,21 @@ const errorNode = div.appendChild(document.createTextNode(""))
 // Global vars
 let client_id
 let domain
+let audience
 let auth0
 
 const logout = async () => {
-  auth0.logout({returnTo: getOriginUrl()})
+  console.log("auth0 logout called.")
+  auth0.logout({returnTo: getOriginUrl()});
+  try{
+    await auth0.loginWithPopup();
+    errorNode.textContent = ''
+  }
+  catch(err){
+    console.log(err)
+    errorNode.textContent = `Popup blocked, please try again or enable popups` + String.fromCharCode(160)
+    return
+  }
   button.textContent = "Login"
   button.removeEventListener('click', logout)
   button.addEventListener('click', login)
@@ -32,7 +43,8 @@ const login = async () => {
       domain: domain,
       client_id: client_id,
       redirect_uri: getOriginUrl(),
-      audience:`https://${domain}/api/v2/`,
+      //audience:`https://${domain}/api/v2/`,
+      audience: audience,
       useRefreshTokens: true,
       cacheLocation: "localstorage",
     });
@@ -48,8 +60,9 @@ const login = async () => {
     const user = await auth0.getUser();
     console.log(user)
     console.log({
-      // return getAccessTokenWithPopup({
-        audience:`https://${domain}/api/v2/`,
+        // return getAccessTokenWithPopup({
+        //audience:`https://${domain}/api/v2/`,
+        audience: audience,
         scope: "read:current_user",
       })
     let token = false
@@ -57,7 +70,8 @@ const login = async () => {
     try{
     token = await auth0.getTokenSilently({
         // return getAccessTokenWithPopup({
-          audience:`https://${domain}/api/v2/`,
+          //audience:`https://${domain}/api/v2/`,
+          audience: audience,
           // scope: "read:current_user",
         });
       }
@@ -65,7 +79,8 @@ const login = async () => {
         if (error.error === 'consent_required' || error.error === 'login_required'){
           console.log('asking user for permission to their profile')
            token = await auth0.getTokenWithPopup({
-              audience:`https://${domain}/api/v2/`,
+              //audience:`https://${domain}/api/v2/`,
+              audience: audience,
               scope: "read:current_user",
             });
             console.log(token)

@@ -21,7 +21,7 @@ from six.moves.urllib.request import urlopen
 from functools import wraps
 from jose import jwt
 
-def getVerifiedSubFromToken(token, domain, unsafe_url_flag=False):
+def getVerifiedSubFromToken(token, domain, audience, unsafe_url_flag=False):
     domain = "https://"+domain
     if unsafe_url_flag is False and domain[-13:] != '.us.auth0.com':
         print('domain should end with ".us.auth0.com" (no slash)')
@@ -45,16 +45,16 @@ def getVerifiedSubFromToken(token, domain, unsafe_url_flag=False):
                 token,
                 rsa_key,
                 algorithms=["RS256"],
-                audience=domain+"/api/v2/",
+                audience=audience,
                 issuer=domain+'/'
             )
         except jwt.ExpiredSignatureError:
             raise 
         except jwt.JWTClaimsError:
-            raise 
+            print("jose jwt decode cannot handle list of audiences")
+            pass
         except Exception:
             raise 
-
         return payload['sub']
 
 def login_button(clientId, domain,key=None, **kwargs):
@@ -76,17 +76,18 @@ def login_button(clientId, domain,key=None, **kwargs):
         User info
     """
     unsafe_url_flag = kwargs.get('unsafe_url_flag', False)
-    user_info = _login_button(client_id=clientId, domain = domain, key=key, default=0)
+    audience = kwargs.get('audience', 'https://${domain}/api/v2/')
+    user_info = _login_button(client_id=clientId, domain = domain, audience=audience, key=key, default=0)
     if not user_info:
         return False
-    elif isAuth(response = user_info, domain = domain, unsafe_url_flag=unsafe_url_flag):
+    elif isAuth(response = user_info, domain = domain, audience=audience, unsafe_url_flag=unsafe_url_flag):
         return user_info
     else:
         print('Auth failed: invalid token')
         raise 
 
-def isAuth(response, domain, unsafe_url_flag=False):
-    return getVerifiedSubFromToken(token = response['token'], domain=domain, unsafe_url_flag=unsafe_url_flag) == response['sub']
+def isAuth(response, domain, audience, unsafe_url_flag=False):
+    return getVerifiedSubFromToken(token = response['token'], domain=domain, audience=audience, unsafe_url_flag=unsafe_url_flag) == response['sub']
 
 if not _RELEASE:
     import streamlit as st
@@ -96,6 +97,7 @@ if not _RELEASE:
 
     clientId = os.environ['clientId']
     domain = os.environ['domain']
+    audience = os.environ['audience']
     st.subheader("Login component")
     user_info = login_button(clientId, domain = domain)
     # user_info = login_button(clientId = "...", domain = "...")
