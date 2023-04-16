@@ -16,10 +16,13 @@ const errorNode = div.appendChild(document.createTextNode(""))
 // Global vars
 let client_id
 let domain
+let audience
 let auth0
 
 const logout = async () => {
-  auth0.logout({returnTo: getOriginUrl()})
+  console.log("auth0 logout called.")
+  auth0.logout({returnTo: getOriginUrl()});
+  Streamlit.setComponentValue(false)
   button.textContent = "Login"
   button.removeEventListener('click', logout)
   button.addEventListener('click', login)
@@ -32,10 +35,15 @@ const login = async () => {
       domain: domain,
       client_id: client_id,
       redirect_uri: getOriginUrl(),
-      audience:`https://${domain}/api/v2/`,
+      //audience:`https://${domain}/api/v2/`,
+      audience: audience,
       useRefreshTokens: true,
       cacheLocation: "localstorage",
     });
+
+    // Remove the event listener for login before adding a new one for logout
+    button.removeEventListener('click', login);
+
     try{
       await auth0.loginWithPopup();
       errorNode.textContent = ''
@@ -48,8 +56,9 @@ const login = async () => {
     const user = await auth0.getUser();
     console.log(user)
     console.log({
-      // return getAccessTokenWithPopup({
-        audience:`https://${domain}/api/v2/`,
+        // return getAccessTokenWithPopup({
+        //audience:`https://${domain}/api/v2/`,
+        audience: audience,
         scope: "read:current_user",
       })
     let token = false
@@ -57,7 +66,8 @@ const login = async () => {
     try{
     token = await auth0.getTokenSilently({
         // return getAccessTokenWithPopup({
-          audience:`https://${domain}/api/v2/`,
+          //audience:`https://${domain}/api/v2/`,
+          audience: audience,
           // scope: "read:current_user",
         });
       }
@@ -65,7 +75,8 @@ const login = async () => {
         if (error.error === 'consent_required' || error.error === 'login_required'){
           console.log('asking user for permission to their profile')
            token = await auth0.getTokenWithPopup({
-              audience:`https://${domain}/api/v2/`,
+              //audience:`https://${domain}/api/v2/`,
+              audience: audience,
               scope: "read:current_user",
             });
             console.log(token)
@@ -82,14 +93,16 @@ const login = async () => {
     button.addEventListener('click', logout)
 }
 
-button.onclick = login
+// Make sure to initialize the button's event listener with the login function
+button.addEventListener('click', login);
+//button.onclick = login
 
 function onRender(event) {
   const data = event.detail
   
   client_id = data.args["client_id"]
   domain = data.args["domain"]
-
+  audience = data.args["audience"]
   Streamlit.setFrameHeight()
 }
 
