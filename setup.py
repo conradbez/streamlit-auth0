@@ -1,8 +1,8 @@
 import setuptools
 
 setuptools.setup(
-    name="streamlit-auth0-component",
-    version="0.1.5",
+    name="garrett-streamlit-auth0",
+    version="0.1.6",
     author="",
     author_email="",
     description="",
