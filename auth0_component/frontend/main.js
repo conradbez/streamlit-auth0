@@ -16,6 +16,7 @@ const errorNode = div.appendChild(document.createTextNode(""))
 // Global vars
 let client_id
 let domain
+let audience
 let auth0
 
 const logout = async () => {
@@ -25,6 +26,7 @@ const logout = async () => {
   button.addEventListener('click', login)
 }
 
+
 const login = async () => {
   button.textContent = 'working...'
   console.log('Callback urls set to: ', getOriginUrl())
@@ -32,7 +34,7 @@ const login = async () => {
       domain: domain,
       client_id: client_id,
       redirect_uri: getOriginUrl(),
-      audience:`https://${domain}/api/v2/`,
+      audience:audience,
       useRefreshTokens: true,
       cacheLocation: "localstorage",
     });
@@ -45,27 +47,29 @@ const login = async () => {
       errorNode.textContent = `Popup blocked, please try again or enable popups` + String.fromCharCode(160)
       return
     }
+    console.log('>> getting user')
     const user = await auth0.getUser();
     console.log(user)
     console.log({
       // return getAccessTokenWithPopup({
-        audience:`https://${domain}/api/v2/`,
+        audience:audience,
         scope: "read:current_user",
       })
     let token = false
     
     try{
+      console.log('>> getting token silently')
     token = await auth0.getTokenSilently({
         // return getAccessTokenWithPopup({
-          audience:`https://${domain}/api/v2/`,
-          // scope: "read:current_user",
+          audience:audience,
+          scope: "read:current_user",
         });
       }
       catch(error){
         if (error.error === 'consent_required' || error.error === 'login_required'){
           console.log('asking user for permission to their profile')
            token = await auth0.getTokenWithPopup({
-              audience:`https://${domain}/api/v2/`,
+              audience:audience,
               scope: "read:current_user",
             });
             console.log(token)
@@ -89,6 +93,7 @@ function onRender(event) {
   
   client_id = data.args["client_id"]
   domain = data.args["domain"]
+  audience = data.args["audience"]
 
   Streamlit.setFrameHeight()
 }

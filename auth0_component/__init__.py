@@ -21,11 +21,9 @@ from six.moves.urllib.request import urlopen
 from functools import wraps
 from jose import jwt
 
-def getVerifiedSubFromToken(token, domain):
+
+def getVerifiedSubFromToken(token, domain, audience, issuer):
     domain = "https://"+domain
-    if domain[-13:] != '.us.auth0.com':
-        print('domain should end with ".us.auth0.com" (no slash)')
-        raise ValueError
     jsonurl = urlopen(domain+"/.well-known/jwks.json")
     jwks = json.loads(jsonurl.read())
     unverified_header = jwt.get_unverified_header(token)
@@ -37,7 +35,7 @@ def getVerifiedSubFromToken(token, domain):
                 "kid": key["kid"],
                 "use": key["use"],
                 "n": key["n"],
-                "e": key["e"]
+                "e": key["e"],
             }
     if rsa_key:
         try:
@@ -45,8 +43,8 @@ def getVerifiedSubFromToken(token, domain):
                 token,
                 rsa_key,
                 algorithms=["RS256"],
-                audience=domain+"/api/v2/",
-                issuer=domain+'/'
+                audience=audience,
+                issuer=issuer,
             )
         except jwt.ExpiredSignatureError:
             raise 
@@ -55,9 +53,10 @@ def getVerifiedSubFromToken(token, domain):
         except Exception:
             raise 
 
-        return payload['sub']
+        return payload["sub"]
 
-def login_button(clientId, domain,key=None, **kwargs):
+
+def login_button(clientId, domain, audience, key=None, **kwargs):
     """Create a new instance of "login_button".
     Parameters
     ----------
@@ -76,30 +75,52 @@ def login_button(clientId, domain,key=None, **kwargs):
         User info
     """
 
-    user_info = _login_button(client_id=clientId, domain = domain, key=key, default=0)
+    user_info = _login_button(
+        client_id=clientId,
+        domain=domain,
+        audience=audience,
+        key=key,
+        default=0
+    )
     if not user_info:
         return False
-    elif isAuth(response = user_info, domain = domain):
+    elif isAuth(response=user_info, domain=domain, audience=audience):
         return user_info
     else:
-        print('Auth failed: invalid token')
+        print("Auth failed: invalid token")
         raise 
 
+
 def isAuth(response, domain):
-    return getVerifiedSubFromToken(token = response['token'], domain=domain) == response['sub']
+    return (
+        getVerifiedSubFromToken(token=response["token"], domain=domain)
+        == response["sub"]
+    )
+
 
 if not _RELEASE:
     import streamlit as st
     from dotenv import load_dotenv
     import os
+
     load_dotenv()
 
-    clientId = os.environ['clientId']
-    domain = os.environ['domain']
+    clientId = os.environ["clientId"]
+    domain = os.environ["domain"]
+    audience = os.getenv("audience", f"{domain}/api/v2/")
+    issuer = os.getenv("issuer", f"{domain}/")
+    debug_logs = os.getenv("debug_logs", False)
+
     st.subheader("Login component")
-    user_info = login_button(clientId, domain = domain)
+    user_info = login_button(
+        clientId,
+        domain=domain,
+        audience=audience,
+        issuer=issuer,
+        debug_logs=debug_logs
+    )
     # user_info = login_button(clientId = "...", domain = "...")
-    st.write('User info')
+    st.write("User info")
     st.write(user_info)
-    if st.button('rerun'):
+    if st.button("rerun"):
         st.experimental_rerun()
