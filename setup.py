@@ -1,14 +1,16 @@
 import setuptools
+from version import git_version_pep440
+
 
 setuptools.setup(
-    name="streamlit-auth0-component",
-    version="0.1.5",
+    name="garrett-streamlit-auth0",
+    version=git_version_pep440(),
     author="",
     author_email="",
     description="",
     long_description="",
     long_description_content_type="text/plain",
-    url="",
+    url="https://github.com/chris-garrett/garrett-streamlit-auth0",
     packages=setuptools.find_packages(),
     include_package_data=True,
     classifiers=[],
@@ -18,6 +20,6 @@ setuptools.setup(
         # If your component has other Python dependencies, list
         # them here.
         "streamlit >= 0.63",
-        "python-jose == 3.3.0"
+        "python-jose == 3.3.0",
     ],
 )

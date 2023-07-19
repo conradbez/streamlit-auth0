@@ -1,0 +1,5 @@
+streamlit >= 0.63
+python-jose == 3.3.0
+python-dotenv
+six
+GitPython
