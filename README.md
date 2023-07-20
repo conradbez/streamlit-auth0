@@ -5,7 +5,7 @@
 ![Example of Streamlit-Auth0|635x380](demo.gif?raw=true)
 
 ## Installation
-`pip install streamlit-auth0-component`
+`pip install garrett-streamlit-auth0`
 
 ## Setup
 

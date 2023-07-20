@@ -1,8 +1,8 @@
 import os
 import streamlit.components.v1 as components
 
-_RELEASE = False
-# _RELEASE = True
+# _RELEASE = False
+_RELEASE = True
 
 
 if not _RELEASE:
