@@ -4,7 +4,7 @@ button {
   border-radius: 4px;
   font-weight: 600;
   margin: 0;
-  width: 200px;
+  width: 100%;
   padding: 10px 0;
   /* box-shadow: 0 0 20px rgba(104, 85, 224, 0.2); */
   transition: 0.4s;
