@@ -1,4 +1,5 @@
 import os
+import re
 import streamlit.components.v1 as components
 
 _RELEASE = False
@@ -23,8 +24,8 @@ from jose import jwt
 
 def getVerifiedSubFromToken(token, domain):
     domain = "https://"+domain
-    if domain[-13:] != '.us.auth0.com':
-        print('domain should end with ".us.auth0.com" (no slash)')
+    if not re.match(r".*\.auth0\.com$", domain):
+        print('domain should end with ".XX.auth0.com" (no trailing slash)')
         raise ValueError
     jsonurl = urlopen(domain+"/.well-known/jwks.json")
     jwks = json.loads(jsonurl.read())
@@ -65,7 +66,7 @@ def login_button(clientId, domain,key=None, **kwargs):
         client_id per auth0 config on your Applications / Settings page
     
     domain: str
-        domain per auth0 config on your Applications / Settings page in the form dev-xxxx.us.auth0.com
+        domain per auth0 config on your Applications / Settings page in the form dev-xxxx.xx.auth0.com
     key: str or None
         An optional key that uniquely identifies this component. If this is
         None, and the component's arguments are changed, the component will
