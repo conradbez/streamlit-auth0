@@ -7,14 +7,14 @@ _RELEASE = True
 
 
 if not _RELEASE:
-  _login_button = components.declare_component(
-    "login_button",
-    url="http://localhost:3000", # vite dev server port
-  )
+    _login_button = components.declare_component(
+        "login_button",
+        url="http://localhost:3000",  # vite dev server port
+    )
 else:
-  parent_dir = os.path.dirname(os.path.abspath(__file__))
-  build_dir = os.path.join(parent_dir, "frontend/dist")
-  _login_button = components.declare_component("login_button", path=build_dir)
+    parent_dir = os.path.dirname(os.path.abspath(__file__))
+    build_dir = os.path.join(parent_dir, "frontend/dist")
+    _login_button = components.declare_component("login_button", path=build_dir)
 
 
 import json
@@ -22,12 +22,13 @@ from six.moves.urllib.request import urlopen
 from functools import wraps
 from jose import jwt
 
+
 def getVerifiedSubFromToken(token, domain):
-    domain = "https://"+domain
-    if not re.match(r".*\.auth0\.com$", domain):
-        print('domain should end with ".XX.auth0.com" (no trailing slash)')
-        raise ValueError
-    jsonurl = urlopen(domain+"/.well-known/jwks.json")
+    domain = "https://" + domain
+    if not domain.endswith(".auth0.com"):  # Add support for custom domains
+        raise ValueError("Domain must ends with .auth0.com")
+
+    jsonurl = urlopen(domain + "/.well-known/jwks.json")
     jwks = json.loads(jsonurl.read())
     unverified_header = jwt.get_unverified_header(token)
     rsa_key = {}
@@ -38,7 +39,7 @@ def getVerifiedSubFromToken(token, domain):
                 "kid": key["kid"],
                 "use": key["use"],
                 "n": key["n"],
-                "e": key["e"]
+                "e": key["e"],
             }
     if rsa_key:
         try:
@@ -46,25 +47,26 @@ def getVerifiedSubFromToken(token, domain):
                 token,
                 rsa_key,
                 algorithms=["RS256"],
-                audience=domain+"/api/v2/",
-                issuer=domain+'/'
+                audience=domain + "/api/v2/",
+                issuer=domain + "/",
             )
         except jwt.ExpiredSignatureError:
-            raise 
+            raise
         except jwt.JWTClaimsError:
-            raise 
+            raise
         except Exception:
-            raise 
+            raise
 
-        return payload['sub']
+        return payload["sub"]
 
-def login_button(clientId, domain,key=None, **kwargs):
+
+def login_button(clientId, domain, key=None, **kwargs):
     """Create a new instance of "login_button".
     Parameters
     ----------
     clientId: str
         client_id per auth0 config on your Applications / Settings page
-    
+
     domain: str
         domain per auth0 config on your Applications / Settings page in the form dev-xxxx.xx.auth0.com
     key: str or None
@@ -77,30 +79,36 @@ def login_button(clientId, domain,key=None, **kwargs):
         User info
     """
 
-    user_info = _login_button(client_id=clientId, domain = domain, key=key, default=0)
+    user_info = _login_button(client_id=clientId, domain=domain, key=key, default=0)
     if not user_info:
         return False
-    elif isAuth(response = user_info, domain = domain):
+    elif isAuth(response=user_info, domain=domain):
         return user_info
     else:
-        print('Auth failed: invalid token')
-        raise 
+        print("Auth failed: invalid token")
+        raise
+
 
 def isAuth(response, domain):
-    return getVerifiedSubFromToken(token = response['token'], domain=domain) == response['sub']
+    return (
+        getVerifiedSubFromToken(token=response["token"], domain=domain)
+        == response["sub"]
+    )
+
 
 if not _RELEASE:
     import streamlit as st
     from dotenv import load_dotenv
     import os
+
     load_dotenv()
 
-    clientId = os.environ['clientId']
-    domain = os.environ['domain']
+    clientId = os.environ["clientId"]
+    domain = os.environ["domain"]
     st.subheader("Login component")
-    user_info = login_button(clientId, domain = domain)
+    user_info = login_button(clientId, domain=domain)
     # user_info = login_button(clientId = "...", domain = "...")
-    st.write('User info')
+    st.write("User info")
     st.write(user_info)
-    if st.button('rerun'):
+    if st.button("rerun"):
         st.experimental_rerun()
