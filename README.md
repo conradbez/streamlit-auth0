@@ -1,11 +1,15 @@
-# Welcome to Auth0-Streamlit
+# Streamlit Auth0 Component (Extended)
 
-**The fastest way to provide comprehensive login inside Streamlit**
+**Enhanced Auth0 login component for Streamlit with support for custom audience, scope, and authorization parameters**
 
 ![Example of Streamlit-Auth0|635x380](demo.gif?raw=true)
 
 ## Installation
-`pip install streamlit-auth0-component`
+```bash
+pip install streamlit-auth0-component-extended
+```
+
+> **Note**: This is an enhanced fork of [streamlit-auth0-component](https://github.com/conradbez/streamlit-auth0) with additional features including custom audience, scope, prompt, and custom domain support.
 
 ## Setup
 
@@ -15,27 +19,75 @@
 - Copy `client_id` and `domain` from this page
 - Follow example below
 
-## An example
-On Auth0 website start a "Single Page Web Application" and copy your client-id / domain (of form xxxx.us.auth0.com) into code below.
+## Features
 
-```
+- ✅ **Custom Audience Support** - Use custom audience values for your Auth0 APIs
+- ✅ **Custom Scope Support** - Request specific scopes (e.g., `"openid profile email read:reports"`)
+- ✅ **Prompt Parameter** - Control authentication prompt behavior (`"login"`, `"consent"`, `"none"`)
+- ✅ **Custom Domain Support** - Works with Auth0 custom domains (not just `.auth0.com`)
+- ✅ **Enhanced Error Handling** - Better error messages and debugging
+- ✅ **Backward Compatible** - All new parameters are optional
+
+## Basic Example
+
+On Auth0 website start a "Single Page Web Application" and copy your client-id / domain into code below.
+
+```python
 from auth0_component import login_button
 import streamlit as st
 
 clientId = "...."
 domain = "...."
 
-user_info = login_button(clientId, domain = domain)
+user_info = login_button(clientId, domain=domain)
 st.write(user_info)
 ```
 
-`user_info` will now contain your user's information 
+## Advanced Example with Custom Parameters
+
+```python
+from auth0_component import login_button
+import streamlit as st
+
+user_info = login_button(
+    clientId="your-client-id",
+    domain="your-domain.com",
+    audience="your-api-audience",  # Custom audience
+    scope="openid profile email read:reports",  # Custom scopes
+    prompt="login"  # Force login prompt
+)
+
+if user_info:
+    st.write(f'Hi {user_info["nickname"]}')
+    # Access token is available in user_info["token"]
+```
+
+`user_info` will now contain your user's information including the access token. 
 
 
-## Todo
+## Configuration
 
-- Pass all info through JWT, at the moment the `sub` field is the only field assing through verification
-- Test with other providers, only Google tested 
+You can use environment variables for configuration. Create a `.env` file:
+
+```bash
+clientId=YOUR_CLIENT_ID
+domain=YOUR_DOMAIN
+audience=your-api-audience  # Optional
+scope=openid profile email read:reports  # Optional
+prompt=login  # Optional
+```
+
+See `.env.example` for a complete example.
+
+## Differences from Original
+
+This fork extends the original [streamlit-auth0-component](https://github.com/conradbez/streamlit-auth0) with:
+
+- Support for custom audience, scope, and prompt parameters
+- Custom domain support (not limited to `.auth0.com` domains)
+- Improved error handling and validation
+- Fixed logout functionality for iframe contexts
+- Enhanced callback URL handling 
 
 
 
